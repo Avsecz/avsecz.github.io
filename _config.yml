@@ -2,7 +2,10 @@
 #
 # Use of `relative_permalinks` ensures post links from the index work properly.
 permalink:           pretty
-relative_permalinks: true
+
+
+# relative_permalinks: true
+paginate_path: "page:num"
 
 # Setup
 title:               Maximum Likelihood
@@ -16,9 +19,11 @@ paginate:            5
 author:
   name:              Žiga Avsec
   email:             avsecz.data@gmail.com
-  github:	     avsecz
 
 # Custom vars
 version:             1.0.0
 github:
   repo:              https://github.com/avsecz
+
+gems: [jekyll-paginate]
+

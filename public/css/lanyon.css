@@ -37,6 +37,7 @@
 /* Prevent scroll on narrow devices */
 html,
 body {
+  font-size: 18px;            /* change here if I want to adjust the font-size CHANGED */
   overflow-x: hidden;
 }
 
@@ -77,12 +78,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 @media (min-width: 38em) {
   .container {
-    max-width: 32rem;
+/* CHANGED from 32*/
+    max-width: 35rem;
   }
 }
 @media (min-width: 56em) {
   .container {
-    max-width: 38rem;
+    /* CHANGED from 38 */
+    max-width: 45rem;
   }
 }
 
