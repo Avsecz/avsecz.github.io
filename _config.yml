@@ -29,5 +29,7 @@ author:
 github:
   repo:              https://github.com/avsecz
 
-gems: [jekyll-paginate]
+gems:
+   - jekyll-coffeescript
+   - jekyll-paginate
 

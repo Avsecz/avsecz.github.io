@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Setting up TensorFlow 0.9 with Python 3.5 on Ubuntu 14.04 EC2 instance
+title: Setting up TensorFlow 0.9 with Python 3.5 on AWS GPU-instance
 excerpt_separator: <!--more-->
 ---
 
@@ -18,7 +18,7 @@ Locally:
 - AWS command line tool: `awscli`
 
 
-On the ec2 instance:
+On the ec2 instance running Ubuntu 14.04:
 
 - Required linux packages
 - CUDA 7.5
@@ -52,7 +52,7 @@ First, register an account on the Amazon web services page: <https://aws.amazon.
 <!-- I helped myself with two good guides:  -->
 <!-- - http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html -->
 
-Next, install the aws command-line tool through python's pip installer [more info](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)):
+Next, install the aws command-line tool through python's pip installer ([more info](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)):
 
 ```bash
 sudo pip install awscli
@@ -80,19 +80,18 @@ In order to administrate our aws account, we have to provide the right credentia
 
 1. Create a new aws user [here](https://console.aws.amazon.com/iam/home?#users) and download the credentials .csv file
 
-	``` bash
-	User Name,Access Key Id,Secret Access Key
-	"some_user",<acces_key_id>,<secret_access_key>
-	```
+		User Name,Access Key Id,Secret Access Key
+		"some_user",<acces_key_id>,<secret_access_key>
+
 2. Run `aws configure` and provide the credentials obtained in the previous step:
 
-	```bash
-	$ aws configure
-	AWS Access Key ID: <acces_key_id>
-	AWS Secret Access Key: <secret_access_key>
-	Default region name [us-east-1]: us-east-1
-	Default output format [None]: <ENTER>
-	```
+
+		$ aws configure
+		AWS Access Key ID: <acces_key_id>
+		AWS Secret Access Key: <secret_access_key>
+		Default region name [us-east-1]: us-east-1
+		Default output format [None]: <ENTER>
+
 
 	Configuration will get stored in the directory `~/.aws`.
 
@@ -101,38 +100,36 @@ In order to administrate our aws account, we have to provide the right credentia
 
 4. Test your installation and configuration by running:
 
-	```bash
-	$ aws ec2 describe-instances --output table
-	-------------------
-	|DescribeInstances|
-	+-----------------+
-	```
+    ```bash
+    $ aws ec2 describe-instances --output table
+    -------------------
+    |DescribeInstances|
+    +-----------------+
+    ```
 
 	I had to wait a minute or so after enabling the admin rights. Before that, I was getting the 'unauthorized' error:
 
-	```
-	Client.UnauthorizedOperation: You are not authorized to perform this operation. (Service: AmazonEC2; Status Code: 403; Error Code: UnauthorizedOperation; ...
-	```
+
+		Client.UnauthorizedOperation: You are not authorized to perform this operation. (Service: AmazonEC2; Status Code: 403; Error Code: UnauthorizedOperation; ...
 
 4. Create an access group `my-sg` and set access rightswith ssh access rights
 
-    ```bash
-	# create my-sg group
-	aws ec2 create-security-group --group-name my-sg --description "My security group"
-
-	# enable ssh access on port 22 from any IP address
-	aws ec2 authorize-security-group-ingress --group-name my-sg --protocol tcp --port 22 --cidr 0.0.0.0/0
-	```
+		# create my-sg group
+		aws ec2 create-security-group --group-name my-sg \
+			--description "My security group"
+	
+        # enable ssh access on port 22 from any IP address
+		aws ec2 authorize-security-group-ingress --group-name my-sg \
+			--protocol tcp --port 22 --cidr 0.0.0.0/0
 
 	Note that this access group doesn't impose any IP filter for the ssh access: `--cidr 0.0.0.0/0`.
 
 
 5. Create the ssh access key and save it to `~/.aws/my_aws_key.pem`
 
-	```bash
-	aws ec2 create-key-pair --key-name my_aws_key --query 'KeyMaterial' --output text > ~/.aws/my_aws_key.pem
-	chmod 400 ~/.aws/my_aws_key.pem
-	```
+
+		aws ec2 create-key-pair --key-name my_aws_key --query 'KeyMaterial' --output text > ~/.aws/my_aws_key.pem
+		chmod 400 ~/.aws/my_aws_key.pem
 
 Alright! We are now ready to launch the ec2 instance!
 
