@@ -89,10 +89,10 @@ knit_post <- function(site.path=getwd(), overwriteAll=F, overwriteOne=NULL,
         files.rmd$rmd[i] <- paste0(files.rmd$rmd[i], "md")
       }
       
-      out.file <- knit(as.character(files.rmd$rmd[i]), 
+      out.file <- knit(input = as.character(files.rmd$rmd[i]), 
                       output = as.character(files.rmd$corresponding.md.file[i]),
-                      envir = parent.frame(), 
-                      quiet = T)
+                      envir = parent.frame(),
+                      quiet = F)
       message(paste0("KnitPost(): ", basename(files.rmd$rmd[i])))
 
       ## if we converted .R, remove the intermediate .Rmd file
