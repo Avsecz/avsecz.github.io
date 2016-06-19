@@ -256,7 +256,7 @@ sudo pip install $TF_BINARY_URL
 #  sudo pip install --upgrade $TF_BINARY_URL
 ```
 
-I used install without the `--upgrade` flag as it gave me an error: 
+I used `pip install` without the `--upgrade` flag as it gave me an error: 
 
 ```
 Cannot remove entries from nonexistent file /home/ubuntu/bin/anaconda2/lib/python2.7/site-packages/easy-install.pth
