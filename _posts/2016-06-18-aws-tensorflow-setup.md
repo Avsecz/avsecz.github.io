@@ -100,12 +100,10 @@ In order to administrate our aws account, we have to provide the right credentia
 
 4. Test your installation and configuration by running:
 
-    ```bash
-    $ aws ec2 describe-instances --output table
-    -------------------
-    |DescribeInstances|
-    +-----------------+
-    ```
+		$ aws ec2 describe-instances --output table
+		-------------------
+		|DescribeInstances|
+		+-----------------+
 
 	I had to wait a minute or so after enabling the admin rights. Before that, I was getting the 'unauthorized' error:
 
