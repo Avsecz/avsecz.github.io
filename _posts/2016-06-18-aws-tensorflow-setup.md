@@ -1,8 +1,8 @@
 ---
 layout: post
-title: Setting up TensorFlow 0.9 with Python 3.5 on Ubuntu 14.04 EC2 instance (from scratch)
+title: Setting up TensorFlow 0.9 with Python 3.5 on Ubuntu 14.04 EC2 instance
+excerpt_separator: <!--more-->
 ---
-
 
 This guide will show you how to:
 
@@ -29,20 +29,23 @@ On the ec2 instance:
 
 Tutorial ends by runnning an example MNIST image classifier on a GPU.
 
+<!--more-->
+
 ## Inspiration for this guide
 
 I used code and ideas mainly from the following two blog-posts:
 
-- http://ramhiser.com/2016/01/05/installing-tensorflow-on-an-aws-ec2-instance-with-gpu-support/
-- http://eatcodeplay.com/installing-gpu-enabled-tensorflow-with-python-3-4-in-ec2/
+- <http://ramhiser.com/2016/01/05/installing-tensorflow-on-an-aws-ec2-instance-with-gpu-support/>
+- <http://eatcodeplay.com/installing-gpu-enabled-tensorflow-with-python-3-4-in-ec2/>
 
 <!-- Difference to these guides is that I haven't installed TensosrFlow from source. -->
 <!-- - https://github.com/BVLC/caffe/wiki/Install-Caffe-on-EC2-from-scratch-(Ubuntu,-CUDA-7,-cuDNN-3) -->
 
 ## Setting up AWS on your local machine
+
 ### Register an account at the AWS
 
-First, register an account on the Amazon web services page: https://aws.amazon.com/.
+First, register an account on the Amazon web services page: <https://aws.amazon.com/>.
 
 ### Install AWS command line tool
 
@@ -55,8 +58,11 @@ Next, install the aws command-line tool through python's pip installer [more inf
 sudo pip install awscli
 ```
 
+
 This will provide you with the `aws` command:
-`$ aws
+
+```bash
+$ aws
 usage: aws [options] <command> <subcommand> [<subcommand> ...] [parameters]
 To see help text, you can run:
 
@@ -64,11 +70,9 @@ To see help text, you can run:
   aws <command> help
   aws <command> <subcommand> help
 aws: error: too few arguments
-`
+```
 
 You can enable the auto-complete function in bash/zsh by following [this](https://github.com/aws/aws-cli#command-completion) guide.
-
-
 
 ### Configure AWS
 
@@ -76,60 +80,59 @@ In order to administrate our aws account, we have to provide the right credentia
 
 1. Create a new aws user [here](https://console.aws.amazon.com/iam/home?#users) and download the credentials .csv file
 
-```
-User Name,Access Key Id,Secret Access Key
-"some_user",<acces_key_id>,<secret_access_key>
-```
+	``` bash
+	User Name,Access Key Id,Secret Access Key
+	"some_user",<acces_key_id>,<secret_access_key>
+	```
+2. Run `aws configure` and provide the credentials obtained in the previous step:
 
-2. Run `aws configure` and provide the credentials obtained in the previous step
+	```bash
+	$ aws configure
+	AWS Access Key ID: <acces_key_id>
+	AWS Secret Access Key: <secret_access_key>
+	Default region name [us-east-1]: us-east-1
+	Default output format [None]: <ENTER>
+	```
 
-``` bash
-$ aws configure
-AWS Access Key ID: <acces_key_id>
-AWS Secret Access Key: <secret_access_key>
-Default region name [us-east-1]: us-east-1
-Default output format [None]: <ENTER>
-```
-
-Configuration is stored in the directory `~/.aws`.
+	Configuration will get stored in the directory `~/.aws`.
 
 3. Give the created user admin rights: follow [this](http://stackoverflow.com/questions/28222445/aws-cli-client-unauthorizedoperation-even-when-keys-are-set/31323864#31323864) stackoverflow answer
 
 
 4. Test your installation and configuration by running:
 
-```bash
-$ aws ec2 describe-instances --output table
--------------------
-|DescribeInstances|
-+-----------------+
-```
+	```bash
+	$ aws ec2 describe-instances --output table
+	-------------------
+	|DescribeInstances|
+	+-----------------+
+	```
 
-I had to wait a minute or so after enabling the admin rights. Before that, I was getting the 'unauthorized' error:
+	I had to wait a minute or so after enabling the admin rights. Before that, I was getting the 'unauthorized' error:
 
-```
-Client.UnauthorizedOperation: You are not authorized to perform this operation. (Service: AmazonEC2; Status Code: 403; Error Code: UnauthorizedOperation; ...
-```
+	```
+	Client.UnauthorizedOperation: You are not authorized to perform this operation. (Service: AmazonEC2; Status Code: 403; Error Code: UnauthorizedOperation; ...
+	```
 
 4. Create an access group `my-sg` and set access rightswith ssh access rights
 
-```bash
-# create my-sg group
-aws ec2 create-security-group --group-name my-sg --description "My security group"
+    ```bash
+	# create my-sg group
+	aws ec2 create-security-group --group-name my-sg --description "My security group"
 
-# enable ssh access on port 22 from any IP address
-aws ec2 authorize-security-group-ingress --group-name my-sg --protocol tcp --port 22 --cidr 0.0.0.0/0
-```
+	# enable ssh access on port 22 from any IP address
+	aws ec2 authorize-security-group-ingress --group-name my-sg --protocol tcp --port 22 --cidr 0.0.0.0/0
+	```
 
-Note that this access group doesn't impose any IP filter for the ssh access: `--cidr 0.0.0.0/0`.
+	Note that this access group doesn't impose any IP filter for the ssh access: `--cidr 0.0.0.0/0`.
 
 
 5. Create the ssh access key and save it to `~/.aws/my_aws_key.pem`
 
-```bash
-aws ec2 create-key-pair --key-name my_aws_key --query 'KeyMaterial' --output text > ~/.aws/my_aws_key.pem
-chmod 400 ~/.aws/my_aws_key.pem
-```
+	```bash
+	aws ec2 create-key-pair --key-name my_aws_key --query 'KeyMaterial' --output text > ~/.aws/my_aws_key.pem
+	chmod 400 ~/.aws/my_aws_key.pem
+	```
 
 Alright! We are now ready to launch the ec2 instance!
 
@@ -167,8 +170,9 @@ ssh -i ~/.aws/my_aws_key.pem ubuntu@<instance IP>
 Since we used the ubuntu AMI image, the default user is `ubuntu`. For Amazon's AMI, the user would is `ec2-user`.
 
 ## Install TensorFlow requirements
+
 ### Install CUDA 7.5
-<!-- linux-headers-generic linux-image-extra-virtual  -->
+
 ```bash
 sudo apt-get update && sudo apt-get -y upgrade
 sudo apt-get -y install linux-headers-$(uname -r) linux-image-extra-`uname -r`
@@ -234,6 +238,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CUDA_ROOT/lib64
 ```
 
 ## Install Python and Tensorflow
+
 ### Install Anaconda with python 3.5
 
 ```bash

@@ -3,6 +3,11 @@
 # Use of `relative_permalinks` ensures post links from the index work properly.
 permalink:           pretty
 
+markdown: kramdown
+kramdown:
+  input: GFM # Enable GitHub Flavored Markdown (fenced code blocks)
+  hard_wrap: false
+highlighter: rouge
 
 # relative_permalinks: true
 paginate_path: "page:num"
@@ -21,7 +26,6 @@ author:
   email:             avsecz.data@gmail.com
 
 # Custom vars
-version:             1.0.0
 github:
   repo:              https://github.com/avsecz
 
