@@ -11,6 +11,9 @@ This guide will show you how to:
 - ssh to the launched instance
 - set up tensorFlow 0.9
 
+In case you know to setup the aws instance,
+checkout [this](https://github.com/Avsecz/aws-tensorflow-setup) bash script for installing tensorflow and its dependencies automatically.
+
 ## Things to be installed
 
 Locally:
@@ -298,7 +301,9 @@ wget https://raw.githubusercontent.com/tensorflow/tensorflow/master/tensorflow/m
 python convolutional.py
 ```
 
-Congrats! You've made it!
+Congrats! You've made it! 
+
+**Info:** You can use [this](https://github.com/Avsecz/aws-tensorflow-setup) bash script to automate the above installation procedure on aws.
 
 ![Alt text](/images/aws-tensorflow.png "Running the mnist model on aws.")
 
